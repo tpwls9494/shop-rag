@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
 from app.api import seller, documents, chat
@@ -17,6 +18,8 @@ app.add_middleware(
 app.include_router(seller.router, prefix="/api/seller", tags=["seller"])
 app.include_router(documents.router, prefix="/api/documents", tags=["documents"])
 app.include_router(chat.router, prefix="/api/chat", tags=["chat"])
+
+app.mount("/", StaticFiles(directory="static"), name="static")
 
 
 @app.on_event("startup")
