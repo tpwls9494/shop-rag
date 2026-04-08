@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from sqlalchemy import text
 
 from app.api import seller, documents, chat
@@ -19,8 +19,6 @@ app.include_router(seller.router, prefix="/api/seller", tags=["seller"])
 app.include_router(documents.router, prefix="/api/documents", tags=["documents"])
 app.include_router(chat.router, prefix="/api/chat", tags=["chat"])
 
-app.mount("/", StaticFiles(directory="static"), name="static")
-
 
 @app.on_event("startup")
 async def startup():
@@ -32,3 +30,13 @@ async def startup():
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
+
+@app.get("/widget.js")
+async def widget_js():
+    return FileResponse("static/widget.js", media_type="application/javascript")
+
+
+@app.get("/demo.html")
+async def demo_html():
+    return FileResponse("static/demo.html", media_type="text/html")
