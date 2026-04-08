@@ -62,7 +62,7 @@ export default function DocumentUpload({ sellerId, onUploaded }: Props) {
               key={t.key}
               onClick={() => setTab(t.key)}
               className={`rounded px-3 py-1 text-sm transition-colors ${
-                tab === t.key ? "bg-white shadow font-medium" : "text-muted-foreground hover:text-foreground"
+                tab === t.key ? "bg-secondary text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {t.label}

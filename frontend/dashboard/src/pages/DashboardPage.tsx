@@ -30,7 +30,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-muted/40">
       {/* 헤더 */}
-      <header className="border-b bg-white px-6 py-4 flex items-center justify-between">
+      <header className="border-b bg-card px-6 py-4 flex items-center justify-between">
         <div>
           <h1 className="font-semibold">shop-rag</h1>
           <p className="text-sm text-muted-foreground">안녕하세요, {shopName} 님</p>
