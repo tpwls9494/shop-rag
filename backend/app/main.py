@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 
 from app.api import seller, documents, chat
 from app.database import engine, Base
@@ -21,6 +22,7 @@ app.include_router(chat.router, prefix="/api/chat", tags=["chat"])
 @app.on_event("startup")
 async def startup():
     async with engine.begin() as conn:
+        await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
         await conn.run_sync(Base.metadata.create_all)
 
 
