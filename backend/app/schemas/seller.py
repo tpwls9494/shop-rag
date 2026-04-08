@@ -1,12 +1,12 @@
 import uuid
 from datetime import datetime
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 
 class SellerCreate(BaseModel):
     name: str
     shop_name: str
-    email: EmailStr
+    email: str
 
 
 class SellerResponse(BaseModel):

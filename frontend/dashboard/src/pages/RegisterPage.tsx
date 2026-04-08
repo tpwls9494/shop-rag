@@ -22,7 +22,8 @@ export default function RegisterPage() {
       localStorage.setItem("shop_name", seller.shop_name);
       navigate("/dashboard");
     } catch (err: any) {
-      setError(err.response?.data?.detail ?? "등록 중 오류가 발생했습니다.");
+      const detail = err.response?.data?.detail;
+      setError(typeof detail === "string" ? detail : "등록 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
     }
