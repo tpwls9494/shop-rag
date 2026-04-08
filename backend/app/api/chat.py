@@ -41,11 +41,11 @@ async def send_message(body: MessageCreate, db: AsyncSession = Depends(get_db)):
     await db.flush()
 
     # LangGraph 실행
-    answer = await run(db, session.seller_id, body.content)
+    result = await run(db, session.seller_id, body.content)
 
     # AI 응답 저장
-    ai_msg = Message(session_id=session.id, role="assistant", content=answer)
+    ai_msg = Message(session_id=session.id, role="assistant", content=result["content"])
     db.add(ai_msg)
     await db.commit()
 
-    return {"role": "assistant", "content": answer}
+    return {"role": "assistant", "content": result["content"], "route": result["route"]}

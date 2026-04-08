@@ -24,8 +24,8 @@ builder.add_edge("direct", END)
 graph = builder.compile()
 
 
-async def run(db: AsyncSession, seller_id: uuid.UUID, question: str) -> str:
-    """RAG 검색 후 LangGraph 실행, 최종 응답 반환."""
+async def run(db: AsyncSession, seller_id: uuid.UUID, question: str) -> dict:
+    """RAG 검색 후 LangGraph 실행, 최종 응답 및 라우트 반환."""
     context = await search(db, seller_id, question)
 
     initial_state: AgentState = {
@@ -36,4 +36,7 @@ async def run(db: AsyncSession, seller_id: uuid.UUID, question: str) -> str:
     }
 
     result = await graph.ainvoke(initial_state)
-    return result["messages"][-1].content
+    return {
+        "content": result["messages"][-1].content,
+        "route": result["route"],
+    }
