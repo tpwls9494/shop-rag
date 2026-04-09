@@ -104,11 +104,15 @@ export default function DocumentUpload({ sellerId, onUploaded }: Props) {
         {/* FAQ 탭 */}
         {tab === "faq" && (
           <div className="space-y-2">
-            <Input
-              placeholder="질문"
-              value={faq.question}
-              onChange={(e) => setFaq({ ...faq, question: e.target.value })}
-            />
+            <div className="space-y-1">
+              <Input
+                placeholder="질문 (최대 200자)"
+                value={faq.question}
+                maxLength={200}
+                onChange={(e) => setFaq({ ...faq, question: e.target.value })}
+              />
+              <p className="text-xs text-muted-foreground text-right">{faq.question.length} / 200</p>
+            </div>
             <Textarea
               placeholder="답변"
               value={faq.answer}

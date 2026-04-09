@@ -78,6 +78,42 @@ async def ingest_url(db: AsyncSession, seller_id: uuid.UUID, url: str) -> Docume
     return await ingest_text(db, seller_id, text, doc_type="url", filename=url)
 
 
+def _chunk_faq(question: str, answer: str) -> list[str]:
+    """FAQ 청킹: 첫 청크에 Q 포함, 이후 청크도 Q 접두어 유지."""
+    q_prefix = f"Q: {question}\nA: "
+    remaining = CHUNK_SIZE - len(q_prefix)
+
+    chunks = []
+    start = 0
+    while start < len(answer):
+        if start == 0:
+            chunk = q_prefix + answer[:remaining]
+            start = remaining
+        else:
+            body = answer[start: start + CHUNK_SIZE - len(q_prefix)]
+            chunk = q_prefix + f"[이어서] " + body
+            start += CHUNK_SIZE - len(q_prefix)
+        chunks.append(chunk)
+    return chunks
+
+
 async def ingest_faq(db: AsyncSession, seller_id: uuid.UUID, question: str, answer: str) -> Document:
-    text = f"Q: {question}\nA: {answer}"
-    return await ingest_text(db, seller_id, text, doc_type="faq")
+    doc = Document(seller_id=seller_id, doc_type="faq", filename=None, status="processing")
+    db.add(doc)
+    await db.flush()
+
+    chunks = _chunk_faq(question, answer)
+    embeddings = await embed_texts(chunks)
+
+    for content, embedding in zip(chunks, embeddings):
+        db.add(DocumentChunk(
+            seller_id=seller_id,
+            document_id=doc.id,
+            content=content,
+            embedding=embedding,
+        ))
+
+    doc.status = "done"
+    await db.commit()
+    await db.refresh(doc)
+    return doc
