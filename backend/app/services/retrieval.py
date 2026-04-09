@@ -7,7 +7,7 @@ from app.models.document import DocumentChunk
 from app.services.embedding import embed_text
 
 TOP_K = 5
-SIMILARITY_THRESHOLD = 0.5
+SIMILARITY_THRESHOLD = 0.7
 
 
 async def search(db: AsyncSession, seller_id: uuid.UUID, query: str) -> list[str]:
