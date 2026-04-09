@@ -23,6 +23,9 @@ export interface Document {
 export const registerSeller = (data: { name: string; shop_name: string; email: string }) =>
   api.post<Seller>("/seller/register", data).then((r) => r.data);
 
+export const loginSeller = (email: string) =>
+  api.post<Seller>("/seller/login", { email }).then((r) => r.data);
+
 export const getDocuments = (seller_id: string) =>
   api.get<Document[]>(`/documents/${seller_id}`).then((r) => r.data);
 

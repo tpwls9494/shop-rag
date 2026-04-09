@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.models.seller import Seller
-from app.schemas.seller import SellerCreate, SellerResponse
+from app.schemas.seller import SellerCreate, SellerLogin, SellerResponse
 
 router = APIRouter()
 
@@ -28,6 +28,15 @@ async def register_seller(body: SellerCreate, db: AsyncSession = Depends(get_db)
     db.add(seller)
     await db.commit()
     await db.refresh(seller)
+    return seller
+
+
+@router.post("/login", response_model=SellerResponse)
+async def login_seller(body: SellerLogin, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Seller).where(Seller.email == body.email))
+    seller = result.scalar_one_or_none()
+    if not seller:
+        raise HTTPException(status_code=404, detail="등록된 이메일이 없습니다.")
     return seller
 
 

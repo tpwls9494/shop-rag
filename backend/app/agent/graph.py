@@ -1,7 +1,8 @@
 import uuid
+from typing import Sequence
 
 from langgraph.graph import StateGraph, END
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import BaseMessage, HumanMessage
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.agent.state import AgentState
@@ -24,13 +25,18 @@ builder.add_edge("direct", END)
 graph = builder.compile()
 
 
-async def run(db: AsyncSession, seller_id: uuid.UUID, question: str) -> dict:
+async def run(
+    db: AsyncSession,
+    seller_id: uuid.UUID,
+    question: str,
+    history: Sequence[BaseMessage] = (),
+) -> dict:
     """RAG 검색 후 LangGraph 실행, 최종 응답 및 라우트 반환."""
     context = await search(db, seller_id, question)
 
     initial_state: AgentState = {
         "seller_id": seller_id,
-        "messages": [HumanMessage(content=question)],
+        "messages": [*history, HumanMessage(content=question)],
         "route": "",
         "context": context,
     }

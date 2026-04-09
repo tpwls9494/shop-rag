@@ -9,6 +9,10 @@ class SellerCreate(BaseModel):
     email: str
 
 
+class SellerLogin(BaseModel):
+    email: str
+
+
 class SellerResponse(BaseModel):
     id: uuid.UUID
     name: str
