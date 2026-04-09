@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { registerSeller, loginSeller } from "@/lib/api";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,32 +6,25 @@ import { Input } from "@/components/ui/input";
 
 type Mode = "login" | "register";
 
-export default function RegisterPage() {
-  const navigate = useNavigate();
+interface Props {
+  onLogin: (id: string, widgetId: string, shopName: string) => void;
+}
+
+export default function RegisterPage({ onLogin }: Props) {
   const [mode, setMode] = useState<Mode>("login");
   const [form, setForm] = useState({ name: "", shop_name: "", email: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const saveAndGo = (seller: { id: string; widget_id: string; shop_name: string }) => {
-    localStorage.setItem("seller_id", seller.id);
-    localStorage.setItem("widget_id", seller.widget_id);
-    localStorage.setItem("shop_name", seller.shop_name);
-    navigate("/dashboard");
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
-      if (mode === "login") {
-        const seller = await loginSeller(form.email);
-        saveAndGo(seller);
-      } else {
-        const seller = await registerSeller(form);
-        saveAndGo(seller);
-      }
+      const seller = mode === "login"
+        ? await loginSeller(form.email)
+        : await registerSeller(form);
+      onLogin(seller.id, seller.widget_id, seller.shop_name);
     } catch (err: any) {
       const detail = err.response?.data?.detail;
       setError(typeof detail === "string" ? detail : "오류가 발생했습니다.");
@@ -49,7 +41,6 @@ export default function RegisterPage() {
           <p className="text-sm text-muted-foreground">이커머스 AI 챗봇 플랫폼</p>
         </CardHeader>
         <CardContent>
-          {/* 탭 */}
           <div className="flex mb-6 border rounded-lg overflow-hidden">
             <button
               type="button"

@@ -1,13 +1,15 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import { getDocuments } from "@/lib/api";
 import WidgetCodeCard from "@/components/WidgetCodeCard";
 import DocumentUpload from "@/components/DocumentUpload";
 import DocumentTable from "@/components/DocumentTable";
 import { Button } from "@/components/ui/button";
 
-export default function DashboardPage() {
-  const navigate = useNavigate();
+interface Props {
+  onLogout: () => void;
+}
+
+export default function DashboardPage({ onLogout }: Props) {
   const queryClient = useQueryClient();
 
   const sellerId = localStorage.getItem("seller_id") ?? "";
@@ -21,8 +23,7 @@ export default function DashboardPage() {
   });
 
   const handleLogout = () => {
-    localStorage.clear();
-    navigate("/");
+    onLogout();
   };
 
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["documents", sellerId] });
