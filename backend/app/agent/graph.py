@@ -8,7 +8,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.agent.state import AgentState
 from app.agent.router import route, decide_route
 from app.agent.nodes import rag_node, direct_node
-from app.services.retrieval import search
 
 # 그래프 빌드
 builder = StateGraph(AgentState)
@@ -31,14 +30,13 @@ async def run(
     question: str,
     history: Sequence[BaseMessage] = (),
 ) -> dict:
-    """RAG 검색 후 LangGraph 실행, 최종 응답 및 라우트 반환."""
-    context = await search(db, seller_id, question)
-
+    """라우팅 후 rag일 때만 검색, LangGraph 실행 후 최종 응답 및 라우트 반환."""
     initial_state: AgentState = {
+        "db": db,
         "seller_id": seller_id,
         "messages": [*history, HumanMessage(content=question)],
         "route": "",
-        "context": context,
+        "context": [],
     }
 
     result = await graph.ainvoke(initial_state)

@@ -3,6 +3,7 @@ from langchain_core.messages import AIMessage
 
 from app.agent.state import AgentState
 from app.config import settings
+from app.services.retrieval import search
 
 _client = OpenAI(api_key=settings.openai_api_key)
 
@@ -21,8 +22,10 @@ def _convert_messages(state_messages):
     return [{"role": role_map.get(m.type, m.type), "content": m.content} for m in state_messages]
 
 
-def rag_node(state: AgentState) -> AgentState:
-    context_text = "\n\n".join(state.get("context", []))
+async def rag_node(state: AgentState) -> AgentState:
+    question = state["messages"][-1].content
+    chunks = await search(state["db"], state["seller_id"], question)
+    context_text = "\n\n".join(chunks)
     messages = [{"role": "system", "content": RAG_SYSTEM.format(context=context_text)}]
     messages += _convert_messages(state["messages"])
     response = _client.chat.completions.create(
