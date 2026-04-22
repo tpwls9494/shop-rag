@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+shoprag-env/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+.next/
+*.local
+
+# Lock files
+package-lock.json
+yarn.lock
+poetry.lock
+
+# 환경변수 / 시크릿
+.env
+.env.local
+.env.*
+
+# Git
+.git/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# 업로드/미디어
+backend/uploads/
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+*.mp4
+*.mp3
+*.pdf
+*.zip
+*.tar.gz
+
+# 로그
+*.log
+logs/
